@@ -1,5 +1,5 @@
 ### EX7 Implementation of Link Analysis using HITS Algorithm
-### DATE: 
+### DATE: 24-10-25
 ### AIM: To implement Link Analysis using HITS Algorithm in Python.
 ### Description:
 <div align = "justify">
@@ -41,43 +41,65 @@ def hits_algorithm(adjacency_matrix, max_iterations=100, tol=1.0e-6):
     num_nodes = len(adjacency_matrix)
     authority_scores = np.ones(num_nodes)
     hub_scores = np.ones(num_nodes)
-    
+    iteration_count = 0
+
     for i in range(max_iterations):
-        # Authority update
+        iteration_count += 1
 
-             /*WRITE YOUR CODE HERE
-        
-        # Hub update
+        # Authority update 
+        new_authority_scores = np.dot(adjacency_matrix.T, hub_scores)
+        total_auth = np.sum(new_authority_scores)
+        if total_auth != 0:
+            new_authority_scores /= total_auth 
 
-             /*WRITE YOUR CODE HERE
-        
+        # Hub update 
+        new_hub_scores = np.dot(adjacency_matrix, new_authority_scores)
+        total_hub = np.sum(new_hub_scores)
+        if total_hub != 0:
+            new_hub_scores /= total_hub 
+
         # Check convergence
+        authority_diff = np.linalg.norm(new_authority_scores - authority_scores, ord=2)
+        hub_diff = np.linalg.norm(new_hub_scores - hub_scores, ord=2)
 
-             /*WRITE YOUR CODE HERE
-        
         if authority_diff < tol and hub_diff < tol:
             break
-        
+
         authority_scores = new_authority_scores
         hub_scores = new_hub_scores
-    
-    return authority_scores, hub_scores
 
-# Example adjacency matrix (replace this with your own data)
-# For simplicity, using a random adjacency matrix
+    return authority_scores, hub_scores, iteration_count
+
+
+# Example adjacency matrix
 adj_matrix = np.array([
     [0, 1, 1],
-    [1, 0, 0],
+    [1, 1, 0],
     [1, 0, 0]
 ])
 
 # Run HITS algorithm
-authority, hub = hits_algorithm(adj_matrix)
+authority, hub, iterations = hits_algorithm(adj_matrix)
+
+print(f"\nAlgorithm converged in {iterations} iterations.\n")
+
+# Display node-wise scores
 for i in range(len(authority)):
     print(f"Node {i}: Authority Score = {authority[i]:.4f}, Hub Score = {hub[i]:.4f}")
 
-# bar chart of authority vs hub scores
+# Rank Authority and Hub Scores separately
+authority_rank = np.argsort(-authority)
+hub_rank = np.argsort(-hub)
 
+print("\nAuthority Rank:")
+for rank, node in enumerate(authority_rank, start=1):
+    print(f"Rank {rank}: Node {node} (Score = {authority[node]:.4f})")
+
+print("\nHub Rank:")
+for rank, node in enumerate(hub_rank, start=1):
+    print(f"Rank {rank}: Node {node} (Score = {hub[node]:.4f})")
+
+# Bar chart of authority vs hub scores
 nodes = np.arange(len(authority))
 bar_width = 0.35
 plt.figure(figsize=(8, 6))
@@ -85,7 +107,7 @@ plt.bar(nodes - bar_width/2, authority, bar_width, label='Authority', color='blu
 plt.bar(nodes + bar_width/2, hub, bar_width, label='Hub', color='green')
 plt.xlabel('Node')
 plt.ylabel('Scores')
-plt.title('Authority and Hub Scores for Each Node')
+plt.title(f'Authority and Hub Scores (Converged in {iterations} Iterations)')
 plt.xticks(nodes, [f'Node {i}' for i in nodes])
 plt.legend()
 plt.tight_layout()
@@ -93,5 +115,10 @@ plt.show()
 ```
 
 ### Output:
+<img width="773" height="370" alt="Screenshot 2025-10-24 110625" src="https://github.com/user-attachments/assets/8cab8ae8-7bcf-4c0f-8575-6fb0926c488c" />
+
+<img width="1068" height="672" alt="Screenshot 2025-10-24 110637" src="https://github.com/user-attachments/assets/101b87ec-4ca5-45fd-b820-0ebf4f4cec8c" />
+
 
 ### Result:
+thus the program executed successfully
